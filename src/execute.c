@@ -80,6 +80,7 @@ int	ft_echo(t_command *cmd)
 	ft_printf("\n");
 	return (0);
 }
+
 int		ft_exit(t_command *cmd)
 {
 	(void)cmd;
@@ -89,10 +90,10 @@ int		ft_exit(t_command *cmd)
 
 int	execute_cmd(t_command *cmd)
 {
-	static t_builtin array[7] 
-		= {ft_echo, change_dir, setenv_wrapper, ft_unsetenv, ft_env, ft_exit,NULL};
+	static t_builtin array[7] = {ft_echo, change_dir, setenv_wrapper
+			, ft_unsetenv, ft_env, ft_exit,NULL};
 	static	char	*builtins[] = {"echo","cd", "setenv"
-										, "unsetenv","env", "exit", NULL};
+			, "unsetenv","env", "exit", NULL};
 	int i;
 
 	if (cmd->args[0] == NULL)
@@ -104,13 +105,8 @@ int	execute_cmd(t_command *cmd)
 	if (cmd->args[0] == NULL)
 		return (0);
 	if  ((i = ft_cmptab(builtins, cmd->args[0])) != -1)
-	{
-		array[i](cmd);
-	}
+		return(array[i](cmd));
 	else
-	{
-		if (spawn_bin(cmd) != 0)
-			return (MEMERR);
-	}
+		return (spawn_bin(cmd)); 
 	return (0);
 }

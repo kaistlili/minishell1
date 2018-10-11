@@ -28,15 +28,13 @@ void	cleanpath(char *str)
 		j++;
 		if (str[i] == '/')
 		{
-			while ((str[i] == '/') 
-				|| (!ft_strncmp(str + i, "./", 2)) || (!ft_strncmp(str + i, ".", 2)))
+			while ((str[i] == '/') || (!ft_strncmp(str + i, "./", 2)) 
+				|| (!ft_strncmp(str + i, ".", 2)))
 			{
 				if (!ft_strncmp(str + i, "./", 2))
 					i++;
 				i++;
 			}
-//			if (!ft_strncmp(str + i, ".", 2))
-	//			i++;
 		}
 		else
 			i++;
@@ -54,31 +52,7 @@ char	*nextslash(char *path)
 		i++;
 	return (&path[i]);
 }
-/*
-void	recursive(char *start)
-{
-	char	*dest;
-	char	*src;
-	int		len;
 
-	if (!ft_strncmp(start, "/../", 4))
-		recursive(start + 3);	
-	else
-		return;
-	if (!ft_strncmp(start + 3, "/../", 4))
-		return;
-	dest = start;
-	src = nextslash(start + 4);
-	len = ft_strlen(src);
-	if (len == 0)
-	{
-		dest[1] = 0;
-		return;
-	}
-	ft_memmove(dest, src, len);
-	dest[len] = 0;
-}
-*/
 char	*next_dir(char *path)
 {
 	int i;
@@ -90,6 +64,7 @@ char	*next_dir(char *path)
 		return (&path[i + 1]);
 	return (&path[i]);
 }
+
 void	recursive(char *start)
 {
 	char	*dest;
@@ -105,7 +80,6 @@ void	recursive(char *start)
 	dest = start;
 	if (start[3] == 0)
 	{
-//		ft_printf("start %p src %p dest %p |%s \n",start,  src, dest, src);
 		*start = 0;
 		return;
 	}

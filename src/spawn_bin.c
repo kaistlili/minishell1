@@ -11,48 +11,6 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
-/*
-char	*searchbin(char *binname, char *path)
-{
-	char	*tmp;
-	char	**tab;
-	int		i;
-	int		ret[2];
-
-	tab = NULL;
-	if (path != NULL)
-	{
-		if ((tab = ft_strsplit(path, ':')) == NULL)
-			return (NULL);
-	}
-	if ((path == NULL) || (tab[0] == NULL))
-	{
-		if (bin_perm(binname) == 0)
-			return (ft_strdup(binname));
-	}
-	i = 0;
-	ret[1] = 2;
-	while (tab[i] != NULL)
-	{
-		add_slash(&tab[i]);
-		tmp = ft_strjoin(tab[i], binname);
-		if (tmp == NULL)
-			return (NULL);
-		if ((ret[0] = bin_perm(tmp)) == 0)
-		{
-			free_tab(tab);
-			return (tmp);
-		}
-		else if (ret[0] != 4)
-			ret[1] = ret[0];
-		free(tmp);
-		i++;
-	}
-	
-	free_tab(tab);
-	exec_error(ret[1], binname);
-	return (NULL);
-}*/
 
 static	void	exec_error(int errnum, char *str)
 {
@@ -127,10 +85,8 @@ char	*searchbin(char *binname, char *path)
 	tab = NULL;
 	ret[1] = 2;
 	if (path != NULL)
-	{
 		if ((tab = ft_strsplit(path, ':')) == NULL)
 			return (NULL);
-	}
 	if ((path == NULL) || (tab[0] == NULL))
 	{
 		if (bin_perm(binname) == 0)
@@ -140,11 +96,8 @@ char	*searchbin(char *binname, char *path)
 			return (ft_strdup(binname));
 		}
 	}
-	else
-	{
-		if ((tmp = iter_paths(tab, binname, ret)) != NULL)
+	else if ((tmp = iter_paths(tab, binname, ret)) != NULL)
 			return (tmp);
-	}
 	exec_error(ret[1], binname);
 	if (tab != NULL)
 		free_tab(tab);
@@ -171,31 +124,38 @@ int	spawner(t_command *cmd, char *binpath)
 	return (0);
 }
 
+int		handle_fullpath(t_command *cmd, char **full_path)
+{
+	int ret;
+
+	if ((ret = bin_perm(cmd->args[0])) != 0)
+	{
+		exec_error(ret, cmd->args[0]);
+		return (ACCERR);
+	}
+	*full_path = ft_strdup(cmd->args[0]);
+	if (*full_path == NULL)
+		return (MEMERR);
+	return (0);
+}
+
 int	spawn_bin(t_command *cmd)
 {
 	char	*full_path;
 	char 	*bin_path;
-	int		ret;
+ 	int		ret;
 
 	full_path = NULL;
-	if (ft_ispath(cmd->args[0]))
-	{
-		if ((ret = bin_perm(cmd->args[0])) != 0)
-		{
-			exec_error(ret, cmd->args[0]);
-			return (0);
-		}
-		full_path = ft_strdup(cmd->args[0]);
-		if (full_path == NULL)
-			return (MEMERR);
-	}
-	else
+	if ((ft_ispath(cmd->args[0])) 
+			&& ((ret = handle_fullpath(cmd, &full_path)) != 0))
+			return (ret);
+	else if (!ft_ispath(cmd->args[0]))
 	{
 		bin_path = tab_get_value("PATH", cmd->process_env);
 		if (bin_path == NULL)
 			bin_path = get_env_value("PATH");
 		full_path = searchbin(cmd->args[0], bin_path);	
-		if (full_path == NULL) // we should handle errors for different cases here
+		if (full_path == NULL) 
 			return (0);
 	}
 	ret = spawner(cmd, full_path);

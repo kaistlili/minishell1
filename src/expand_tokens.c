@@ -38,6 +38,13 @@ char	*tilde_expand(char *homepath, char *arg)
 	return (expand);
 }
 
+
+			//f ((e_var != NULL) && (*e_var != 0))
+	//		{
+	//			if (putstr_dbuff(&buffer, e_var, &j) != 0)
+	//				return (NULL);
+	//		}
+
 char	*expand_dollar(char *line)
 {
 	t_list	buffer;
@@ -56,11 +63,9 @@ char	*expand_dollar(char *line)
 		if ((line[i] == '$') && (line[i + 1] != 0))
 		{
 			e_var = get_env_value(&line[i + 1]);
-			if ((e_var != NULL) && (*e_var != 0))
-			{
-				if (putstr_dbuff(&buffer, e_var, &j) != 0)
-					return (NULL);
-			}
+			if (((e_var != NULL) && (*e_var != 0))
+				&& (putstr_dbuff(&buffer, e_var, &j) != 0))
+				return (NULL);
 			while (valid_env_char(line[i + 1]))
 				i++;
 		}

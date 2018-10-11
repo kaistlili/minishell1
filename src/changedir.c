@@ -101,11 +101,26 @@ void	update_env_pwd(char *pwd, char *curpath)
 	}
 }
 
+void	cd_dispatch_err(char *arg, char *curpath)
+{
+	int ret;
+
+	if (arg == NULL)
+		arg = curpath;
+	if ((ret =  path_access(curpath)) != 0) 
+		cd_error(ret, arg);
+}
+
+void	canon_form(char *curpath)
+{
+	cleanpath(curpath);  
+	cleandotdot(curpath);
+}
+
 int	cd_l(char *curpath, char *arg)
 {
 	char 	*pwd;
 	char 	*tmp;
-	int		ret;
 
 	pwd = handle_pwd_l();
 	if ((curpath[0] != '/') && (pwd != NULL)) // if getcwd fails we never get here
@@ -121,36 +136,26 @@ int	cd_l(char *curpath, char *arg)
 			return (MEMERR);
 		}
 	}
-	cleanpath(curpath); // need checking 
-	cleandotdot(curpath);
+	canon_form(curpath);
 	if (chdir(curpath) != 0)
-	{
-		if (arg == NULL)
-			arg = curpath;
-		if ((ret =  path_access(curpath)) != 0) 
-			cd_error(ret, arg);
-	}
+		cd_dispatch_err(arg, curpath);
 	else
 		update_env_pwd(pwd, curpath);
 	if (pwd != NULL)
 		free(pwd);
 	free(curpath);
-	return (0); // to change ??
+	return (0);
 }
 
 int	cd_p(char *curpath, char *arg)
 {
 	char 	*tmp_pwd;
 	char 	*old_pwd;
-	int		ret;
 
 	tmp_pwd = get_env_value("PWD");
 	if (chdir(curpath) != 0)
 	{
-		if (arg == NULL)
-			arg = curpath;
-		if ((ret =  path_access(curpath)) != 0) 
-			cd_error(ret, arg);
+		cd_dispatch_err(arg, curpath);
 		return (0);
 	}
 	old_pwd = getcwd(NULL, 0);
@@ -214,10 +219,8 @@ char	cd_parseopt(char **args)
 int		change_dir(t_command *cmd)
 {
 	char	*curpath;
-	int		flag;
 	char	opt;
 
-	g_optind = 1;
 	if ((opt = cd_parseopt(cmd->args)) == '?')
 		return (0);
 	if ((cmd->args[g_optind] == NULL) || (cmd->args[g_optind][0] == 0))
@@ -238,8 +241,6 @@ int		change_dir(t_command *cmd)
 	if (opt == 'P')
 		cd_p(curpath, cmd->args[g_optind]);
 	else if (opt == 'L')
-	{
 		cd_l(curpath, cmd->args[g_optind]);
-	}
-	return (1);
+	return (0);
 }

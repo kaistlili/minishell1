@@ -80,15 +80,12 @@ t_environ *env_to_lst(char *env_var)
 	int	i;
 
 	i = 0;
-//	while (valid_env_char(env_var[i]))
-//		i++;	
 	while ((env_var[i]) && (env_var[i] != '='))
 		i++;
 	name = ft_strnew(i);
 	if (name == NULL)
 		return (NULL);
 	ft_strncpy(name, env_var, i);
-//	value = get_value(env_var);
 	if (env_var[i] != 0)
 		i++;
 	value = ft_strdup(&env_var[i]);

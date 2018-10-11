@@ -76,7 +76,6 @@ int		append_tab(char **new_env, char **to_add, int count)
 		i++;
 	while (count)
 	{
-		//merge env here, we need to handle index while filling **char
 		if ((ret = merge_env(new_env, *to_add)) == -1)
 		{
 			new_env[i] = ft_strdup(*to_add);
@@ -93,34 +92,31 @@ int		append_tab(char **new_env, char **to_add, int count)
 	return (0);
 }
 
-
-
-int	ft_env(t_command *cmd)
+char	env_parseopt(char **args)
 {
-	int			flag;
-	int 		count;
-	char		**new_env;
-	t_environ	*base_env;
-	t_command	*new_cmd;
-	char		opt;
-	int			ret;
+	int 	flag;
+	char	opt;
 
-	ret = 0;
 	flag = 0;
 	g_optind = 1;
 	opt = 0;
-	while ((flag = ft_getopt(cmd->args, "i")) != -1)
+	while ((flag = ft_getopt(args, "i")) != -1)
 	{
 		opt = (char)flag;
 		if (opt == '?')
 		{
 			ft_printf("usage: env [-i] [NAME=VAR] .. [BIN]\n");
-			return (0);
+			break;
 		}
 	}
-	count = g_optind;
-	while ((cmd->args[count] != NULL) && (valid_env_var(cmd->args[count])))
-		count++;
+	return (opt);
+}
+
+char **construct_env(t_command *cmd, char opt, int count)
+{
+	char		**new_env;
+	t_environ	*base_env;
+	
 	count = count - g_optind;
 	base_env = *g_environ;
 	if (opt == 'i')
@@ -128,21 +124,45 @@ int	ft_env(t_command *cmd)
 	new_env = lst_to_tab(base_env, count);
 	if ((new_env == NULL) 
 			|| (append_tab(new_env, cmd->args + g_optind, count) == MEMERR))
-		return (MEMERR);	
-	count = count + g_optind;
+		return (NULL);	
+	return (new_env);
+}
+
+int	spawn_new_env(char **args, char **new_env)
+{
+	t_command	*new_cmd;
+	int			ret;
+	
+	new_cmd = new_cmd_node(args);
+	if (new_cmd == NULL)
+		return (MEMERR);
+	new_cmd->process_env = new_env;
+	ret = spawn_bin(new_cmd);
+	free_cmdlst(new_cmd);
+	return (ret);
+}
+
+int	ft_env(t_command *cmd)
+{
+	int 		count;
+	char		**new_env;
+	char		opt;
+	int			ret;
+
+	ret = 0;
+	if ((opt = env_parseopt(cmd->args)) == '?')
+		return (0);
+	count = g_optind;
+	while ((cmd->args[count] != NULL) && (valid_env_var(cmd->args[count])))
+		count++;
+	if ((new_env = construct_env(cmd, opt, count)) == NULL)
+		return (MEMERR);
 	if (cmd->args[count] == NULL)
 	{
 		print_tab(new_env);
 		free_tab(new_env);
 	}
 	else
-	{
-		new_cmd = new_cmd_node(cmd->args + count);
-		if (new_cmd == NULL)
-			return (MEMERR);
-		new_cmd->process_env = new_env;
-		ret = spawn_bin(new_cmd);
-		free_cmdlst(new_cmd);
-	}
+		ret = spawn_new_env(cmd->args + count, new_env);
 	return (ret);	
 }
