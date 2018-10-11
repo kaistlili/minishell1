@@ -1,0 +1,7 @@
+passing args to fork+execve ??
+we need a versatile executor, same code for builtins and /bin executables ??
+env is malloced elsewhere if modified that is all
+
+
+General notes;
+empty string (white spaces) delimited by ;; is syntax error, our minishell will malloc empty t_command node to identify it.

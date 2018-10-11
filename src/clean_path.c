@@ -1,0 +1,143 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   clean_path.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ktlili <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/09/18 20:01:43 by ktlili            #+#    #+#             */
+/*   Updated: 2018/09/20 14:26:45 by ktlili           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../minishell.h"
+
+
+void	cleanpath(char *str)
+{
+	char buffer[1025];
+	int	i;
+	int j;
+
+	i = 0;
+	j = 0;
+	ft_bzero(buffer, 1025);
+	while (str[i] != 0)
+	{
+		buffer[j] = str[i];
+		j++;
+		if (str[i] == '/')
+		{
+			while ((str[i] == '/') 
+				|| (!ft_strncmp(str + i, "./", 2)) || (!ft_strncmp(str + i, ".", 2)))
+			{
+				if (!ft_strncmp(str + i, "./", 2))
+					i++;
+				i++;
+			}
+//			if (!ft_strncmp(str + i, ".", 2))
+	//			i++;
+		}
+		else
+			i++;
+	}
+	ft_bzero(str, ft_strlen(str));
+	ft_strcpy(str, buffer);
+}
+
+char	*nextslash(char *path)
+{
+	int i;
+
+	i = 0;
+	while ((path[i] != 0) && (path[i] != '/'))
+		i++;
+	return (&path[i]);
+}
+/*
+void	recursive(char *start)
+{
+	char	*dest;
+	char	*src;
+	int		len;
+
+	if (!ft_strncmp(start, "/../", 4))
+		recursive(start + 3);	
+	else
+		return;
+	if (!ft_strncmp(start + 3, "/../", 4))
+		return;
+	dest = start;
+	src = nextslash(start + 4);
+	len = ft_strlen(src);
+	if (len == 0)
+	{
+		dest[1] = 0;
+		return;
+	}
+	ft_memmove(dest, src, len);
+	dest[len] = 0;
+}
+*/
+char	*next_dir(char *path)
+{
+	int i;
+
+	i = 0;
+	while ((path[i] != 0) && (path[i] != '/'))
+		i++;
+	if (path[i] == '/')
+		return (&path[i + 1]);
+	return (&path[i]);
+}
+void	recursive(char *start)
+{
+	char	*dest;
+	char	*src;
+	int		len;
+
+	if (!ft_strncmp(start, "../", 3))
+		recursive(start + 3);	
+	else
+		return;
+	if (!ft_strncmp(start + 3, "../", 3))
+		return;
+	dest = start;
+	if (start[3] == 0)
+	{
+//		ft_printf("start %p src %p dest %p |%s \n",start,  src, dest, src);
+		*start = 0;
+		return;
+	}
+	else
+		src = next_dir(start + 3);
+	len = ft_strlen(src);
+	ft_memmove(dest, src, len);
+	dest[len] = 0;
+}
+
+void cleandotdot(char *path)
+{
+	int i;
+	int	len;
+	char *dest;
+	char *src;
+	
+	ft_strrev(path);
+	i = 0;
+	if (!ft_strncmp(path, "../", 3))
+		recursive(&path[i]);
+	while (path[i] != 0)
+	{
+		if (!ft_strncmp(path + i, "/../", 4))
+			recursive(&path[i + 1]);
+		else
+			i++;
+	}
+	if (*path == 0)
+	{
+		path[0] = '/';
+		path[1] = 0;
+	}
+	ft_strrev(path);	
+}
