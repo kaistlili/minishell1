@@ -10,26 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-/*
- * parse e_args with format "[str]=" to get count
- * if (-i)
- * 		new_env = NULL;
- * else
- * 		new_env = copy(env, count);
- * copy new vars to new_env;
- * no more arg just print env and return
- * ----------------------------------
- * first invalid e_arg is binary name
- * {
- *		construct new cmd node
- *		put env
- *		put args
- *		call spawn_bin
- *		PROFIT????
- * }
- *
- */
-
 #include "../minishell.h"
 
 int	valid_env_var(char *str)

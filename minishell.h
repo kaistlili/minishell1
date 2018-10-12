@@ -60,6 +60,7 @@ int			write_dbuff(t_list *buffer, char c, int index);
 int putstr_dbuff(t_list *buffer, char *str, int *index);
 int			path_access(char *path);
 int			ft_ispath(char *str);
+char		*handle_pwd_l(void);
 
 //env lst fn
 int	tab_to_lst(char **env, t_environ **env_lst);
@@ -68,7 +69,6 @@ char **lst_to_tab(t_environ *env_lst, int size);
 //env fn
 char		*get_env_value(char *name);
 int			set_shell_env(char *name, char *value);
-char		**resize_tab(char **tab, char *to_add);
 int			valid_env_name(char *str);
 int			valid_env_char(char c);
 t_environ	*get_env_node(char *name);
@@ -92,6 +92,4 @@ int 		change_dir(t_command *cmd);
 int			setenv_wrapper(t_command *cmd);
 int			ft_unsetenv(t_command *cmd);
 int			ft_env(t_command *cmd);
-char		*handle_pwd_l(void);
-//ft_env
-int	ft_env(t_command *cmd);
+int			ft_env(t_command *cmd);

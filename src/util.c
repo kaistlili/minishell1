@@ -40,10 +40,6 @@ int	add_slash(char **path)
 	}
 	return (0);
 }
-/*
-	we need a function that stats and checks access for a given file, print error accordingly 
-	and return -1 if unsuccessful, return 1 if file, 2 if dir, 3 if other
-*/
 
 int	path_access(char *path)
 {
@@ -114,7 +110,6 @@ void		add_cmdlst(t_command **head, t_command *to_add)
 t_command	*new_cmd_node(char **space_split)
 {
 	t_command	*new;
-	int			i;
 
 	new = malloc(sizeof(t_command));
 	if (new == NULL)
@@ -144,7 +139,7 @@ char	**dup_tab(char **tab)
 		if (copy[i] == NULL)
 		{
 			free_tab(copy);
-			return (NULL); // maybe free all before ?		
+			return (NULL);		
 		}
 		i++;
 	}

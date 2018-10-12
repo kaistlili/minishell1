@@ -216,6 +216,7 @@ char	cd_parseopt(char **args)
 	}
 	return (opt);
 }
+
 int		change_dir(t_command *cmd)
 {
 	char	*curpath;

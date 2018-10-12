@@ -22,7 +22,7 @@ void	dispatch_err(int error)
 		exit(1);
 	}
 	else if (error == 2)
-		ft_printf("syntax error\n");
+		ft_printf("minishell: syntax error\n");
 }
 
 static void		show_prompt(void)
@@ -72,7 +72,6 @@ int	main(int ac, char **av, char **env)
 	t_command	**command_lst;
 	t_command	*tmp;
 	int			ret;
-	int			i;
 
 	(void)ac;
 	(void)av;
@@ -80,7 +79,6 @@ int	main(int ac, char **av, char **env)
 	command_lst = ft_memalloc(sizeof(t_command*));
 	if ((command_lst == NULL) || (g_environ == NULL) || (init_g_env(env) != 0))
 		return (MEMERR);
-	i = 0;
 	show_prompt();
 	while (get_next_line(0, &line) > 0)
 	{

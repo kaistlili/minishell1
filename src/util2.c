@@ -15,10 +15,10 @@
 
 int	write_dbuff(t_list *buffer, char c, int index)
 {
-	char *tmp;
-	static int buff_size = 1024;
+	char 			*tmp;
+	static size_t	buff_size = 1024;
 
-	if (index >= buffer->content_size)
+	if (index >= (int)buffer->content_size)
 	{
 		tmp = ft_memalloc(1 + buffer->content_size + buff_size);
 		if (tmp == NULL)
@@ -42,30 +42,6 @@ int putstr_dbuff(t_list *buffer, char *str, int *index)
 		str++;
 	}
 	return (0);
-}
-
-char	**resize_tab(char **tab, char *to_add)
-{
-	size_t len;
-	char **new;
-
-	len = 0;
-	while (tab[len] != NULL)
-		len++;
-	new = malloc((len + 2) * sizeof(char*));
-	if (new == NULL)
-		return (NULL);
-	len = 0;
-	while (tab[len] != NULL)
-	{
-		new[len] = ft_strdup(tab[len]);
-		if (new[len] == NULL)
-			return (NULL);
-		len++;
-	}
-	new[len] = to_add;
-	new[len + 1] = NULL;
-	return (new);	
 }
 
 void	putstr_stderr(char *str)

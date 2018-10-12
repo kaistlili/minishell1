@@ -66,12 +66,11 @@ void	delete_env_node(t_environ *to_del)
 	free(to_del);
 }
 
-char	**lst_to_tab(t_environ *const env_lst, int size)
+int		lst_len(t_environ *const env_lst)
 {
-	int			len;
+	int 		len;
 	t_environ	*tmp;
-	char		**tab;
-	
+
 	len = 0;
 	tmp = env_lst;
 	while (tmp != NULL)
@@ -79,6 +78,16 @@ char	**lst_to_tab(t_environ *const env_lst, int size)
 		tmp = tmp->next;
 		len++;
 	}
+	return (len);
+}
+
+char	**lst_to_tab(t_environ *const env_lst, int size)
+{
+	int			len;
+	t_environ	*tmp;
+	char		**tab;
+	
+	len = lst_len(env_lst);
 	tab = ft_memalloc((len + size + 1) * sizeof (char*));
 	if (tab == NULL)
 		return (NULL);

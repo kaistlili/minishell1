@@ -93,10 +93,7 @@ void	recursive(char *start)
 void cleandotdot(char *path)
 {
 	int i;
-	int	len;
-	char *dest;
-	char *src;
-	
+
 	ft_strrev(path);
 	i = 0;
 	if (!ft_strncmp(path, "../", 3))

@@ -23,7 +23,6 @@ int		tilde_valid(char *str)
 
 char	*tilde_expand(char *homepath, char *arg)
 {
-	int		i;
 	size_t	tot_len;
 	char	*expand;
 

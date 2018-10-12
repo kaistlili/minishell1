@@ -74,7 +74,6 @@ t_environ *new_env_node(char *name, char *value)
 
 t_environ *env_to_lst(char *env_var)
 {
-	t_environ *new;
 	char *name;
 	char *value;
 	int	i;
@@ -118,7 +117,7 @@ int		tab_to_lst(char **env, t_environ **env_lst)
 
 t_environ	*get_env_node(char *name)
 {
-	int			len;
+	size_t		len;
 	t_environ	*tmp;
 
 	len = 0;

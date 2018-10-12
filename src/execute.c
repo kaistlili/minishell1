@@ -12,8 +12,6 @@
 
 #include "../minishell.h"
 
-
-/* we should not set env with empty name, empty value is fine*/
 int	setenv_wrapper(t_command *cmd)
 {
 	int i;
@@ -86,7 +84,6 @@ int		ft_exit(t_command *cmd)
 	(void)cmd;
 	exit(1);
 }
-
 
 int	execute_cmd(t_command *cmd)
 {

@@ -43,9 +43,7 @@ static int parse_multicmd(char *line)
 int	construct_cmd(char *line, t_command **curr_cmd)
 {
 	char	**space_split;
-	int 	i;
 
-	i = 0;
 	space_split = ft_splitblanks(line);
 	if (space_split == NULL)
 		return (MEMERR);		
