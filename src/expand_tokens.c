@@ -37,12 +37,14 @@ char	*tilde_expand(char *homepath, char *arg)
 	return (expand);
 }
 
-
-			//f ((e_var != NULL) && (*e_var != 0))
-	//		{
-	//			if (putstr_dbuff(&buffer, e_var, &j) != 0)
-	//				return (NULL);
-	//		}
+int	init_dbuff(t_list *buffer, char *line)
+{
+	buffer->content = ft_strnew(ft_strlen(line));
+	if (buffer->content == NULL)
+		return (MEMERR);
+	buffer->content_size = ft_strlen(line);
+	return (0);
+}
 
 char	*expand_dollar(char *line)
 {
@@ -53,10 +55,8 @@ char	*expand_dollar(char *line)
 
 	i = 0;
 	j = 0;
-	buffer.content = ft_strnew(ft_strlen(line));
-	if (buffer.content == NULL)
+	if (init_dbuff(&buffer, line) != 0)
 		return (NULL);
-	buffer.content_size = ft_strlen(line);
 	while (line[i] != 0)
 	{
 		if ((line[i] == '$') && (line[i + 1] != 0))
@@ -68,18 +68,28 @@ char	*expand_dollar(char *line)
 			while (valid_env_char(line[i + 1]))
 				i++;
 		}
-		else
-		{
-			if (write_dbuff(&buffer, line[i], j) != 0)
+		else if (write_dbuff(&buffer, line[i], &j) != 0)
 				return (NULL);
-			j++;
-		}
 		i++;
 	}
 	return (buffer.content);
 }
 
-int		expand_tokens(char **token)
+int		handle_tilde(char **arg, char **tmp, int write, int read)
+{
+	*tmp = get_env_value("HOME");
+	if (*tmp != NULL)
+		*tmp = tilde_expand(*tmp, arg[read]);
+	else
+		*tmp = ft_strdup("\0");
+	if (*tmp == NULL)
+		return (MEMERR);		
+	free(arg[write]);
+	arg[write] = *tmp;
+	return (0);
+}
+
+int		expand_tokens(char **arg)
 {
 	int		read;
 	int		write;
@@ -87,31 +97,24 @@ int		expand_tokens(char **token)
 
 	read = 0;
 	write = 0;
-	while (token[read] != NULL)
+	while (arg[read] != NULL)
 	{
-		if ((token[read][0] == '~') && (tilde_valid(&token[read][1])))
+		if ((arg[read][0] == '~') && (tilde_valid(&arg[read][1])))
 		{
-			tmp = get_env_value("HOME");
-			if (tmp != NULL)
-				tmp = tilde_expand(tmp, token[read]);
-			else
-				tmp = ft_strdup("\0");
-			if (tmp == NULL)
-				return (MEMERR);		
-			free(token[write]);
-			token[write] = tmp;
+			if (handle_tilde(arg, &tmp, write, read) != 0)
+				return (MEMERR);
 		}
-		tmp = expand_dollar(token[read]);
+		tmp = expand_dollar(arg[read]);
 		if (tmp == NULL)
 			return (MEMERR);
-		free(token[write]);
-		token[write] = tmp;
-		if (token[write][0] != 0)
+		free(arg[write]);
+		arg[write] = tmp;
+		if (arg[write][0] != 0)
 			write++;
 		read++;
 	}
-	if (token[write] != NULL)
-		free_tab_bytes(&token[write]);
-	token[write] = NULL;
+	if (arg[write] != NULL)
+		free_tab_bytes(&arg[write]);
+	arg[write] = NULL;
 	return (0);
 }

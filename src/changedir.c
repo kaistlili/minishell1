@@ -42,6 +42,22 @@ static int	check_cdpath(char **curpath) /* this cant return void, we need error 
 	return (0);
 }
 
+
+int	handle_cdpath(char **curpath)
+{
+	if ((ft_strncmp(*curpath,"/", 1)) /*add exception for .. and . */ 
+			&& (ft_strncmp(*curpath, "../", 3))
+				&& (ft_strncmp(*curpath, "./", 2)))
+	{
+		if (check_cdpath(curpath) == MEMERR)
+		{
+			free(*curpath);
+			return (MEMERR); 
+		}
+	}
+	return (0);
+}
+
 static int	cd_error(int errnum, char *str)
 {
 	if (errnum == 1)
@@ -60,7 +76,7 @@ static int	cd_error(int errnum, char *str)
 	return (0);
 }
 
-char	*handle_pwd_l(void) /*if ret NULL, we just send curpath to chdir */
+char	*handle_pwd_l(void)
 {
 	char *env_pwd;
 	char *p_pwd;
@@ -170,21 +186,6 @@ int	cd_p(char *curpath, char *arg)
 	if (tmp_pwd != NULL)
 		free(tmp_pwd);	
 	free(curpath);
-	return (0);
-}
-
-int	handle_cdpath(char **curpath)
-{
-	if ((ft_strncmp(*curpath,"/", 1)) /*add exception for .. and . */ 
-			&& (ft_strncmp(*curpath, "../", 3))
-				&& (ft_strncmp(*curpath, "./", 2)))
-	{
-		if (check_cdpath(curpath) == MEMERR)
-		{
-			free(*curpath);
-			return (MEMERR); 
-		}
-	}
 	return (0);
 }
 
