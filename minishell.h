@@ -10,16 +10,19 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "lib/libft.h"
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <limits.h>
+#ifndef MINISHELL_H
+# define MINISHELL_H
 
-#define MEMERR 1
-#define SYNERR 2
-#define ENVERR 3
-#define ACCERR 4
+# include "lib/libft.h"
+# include <sys/stat.h>
+# include <sys/types.h>
+# include <sys/wait.h>
+# include <limits.h>
+
+# define MEMERR 1
+# define SYNERR 2
+# define ENVERR 3
+# define ACCERR 4
 
 typedef	struct			s_command
 {
@@ -56,7 +59,7 @@ t_command	*new_cmd_node(char **space_split);
 void		add_cmdlst(t_command **head, t_command *to_add);
 void		free_cmdlst(t_command *command_lst);
 void		putstr_stderr(char *str);
-int			write_dbuff(t_list *buffer, char c, int index);
+int			write_dbuff(t_list *buffer, char c, int *index);
 int putstr_dbuff(t_list *buffer, char *str, int *index);
 int			path_access(char *path);
 int			ft_ispath(char *str);
@@ -76,7 +79,7 @@ void		delete_env_node(t_environ *to_del);
 char		*tab_get_value(char *name, char **env);
 //parsing
 int			parser(char *line, t_command **cmd_lst);
-int			expand_tokens(char **token);
+int			expand_tokens(char **arg);
 
 //executor
 int			execute_cmd(t_command *cmd);
@@ -93,3 +96,4 @@ int			setenv_wrapper(t_command *cmd);
 int			ft_unsetenv(t_command *cmd);
 int			ft_env(t_command *cmd);
 int			ft_env(t_command *cmd);
+#endif

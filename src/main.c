@@ -14,7 +14,7 @@
 
 t_environ **g_environ = NULL;
 
-void	dispatch_err(int error)
+void	dispatch_parse_err(int error)
 {
 	if (error == 1)
 	{
@@ -46,7 +46,7 @@ int		init_g_env(char **env)
 	
 	if (tab_to_lst(env, g_environ) != 0)
 	{
-		dispatch_err(MEMERR);
+		dispatch_parse_err(MEMERR);
 		return (MEMERR);
 	}
 	if ((shlvl = get_env_node("SHLVL")) == NULL)
@@ -66,11 +66,30 @@ int		init_g_env(char **env)
 	return (0);
 }
 
+int		exec_loop(t_command *command_lst)
+{
+	t_command	*tmp;
+
+	tmp = command_lst;
+	if ((tmp != NULL) && (tmp->args != NULL))
+	{
+		while (tmp != NULL) 
+		{
+			if ((execute_cmd(tmp)) == MEMERR)
+			{
+				free_cmdlst(command_lst);
+				return (MEMERR);
+			}
+			tmp = tmp->next;
+		}
+	}
+	return (0);
+}
+
 int	main(int ac, char **av, char **env)
 {
 	char 		*line;
 	t_command	**command_lst;
-	t_command	*tmp;
 	int			ret;
 
 	(void)ac;
@@ -83,27 +102,17 @@ int	main(int ac, char **av, char **env)
 	while (get_next_line(0, &line) > 0)
 	{
 		if ((ret = parser(line, command_lst)) != 0)
-		{
-			dispatch_err(ret);
-		}
-		free(line);
-	//	print_cmd_lst(*command_lst);
-		tmp = *command_lst;
-		if ((tmp != NULL) && (tmp->args != NULL))
-		{
-			while (tmp != NULL) 
-			{
-				if (execute_cmd(tmp) != 0)
-					break;
-				tmp = tmp->next;
-			}
-		}
+			dispatch_parse_err(ret);
+		else if ((ret == MEMERR) 
+				|| (ret = exec_loop(*command_lst) == MEMERR))
+			break;
 		free_cmdlst(*command_lst);
+		free(line);	
 		*command_lst = NULL;
 		show_prompt();
 	}
 	free(line);
 	free(command_lst);
 	write(1, "\n", 1);
-	return (0);	
+	return (ret);	
 }
