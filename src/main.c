@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include "../ft_parser.h"
 
 t_environ **g_environ = NULL;
 
@@ -85,15 +86,47 @@ int		exec_loop(t_command *command_lst)
 	}
 	return (0);
 }
+/*
+void	print_tree(t_tree *node)
+{
+	char *ssep = "SEP";
+	char *scmd = "CMD";
+	char *spipe = "PIPE";
+	char *ptr;
+	static int lvl;
 
+	lvl++;
+	if (node->left != NULL)
+		print_tree(node->left);
+	if (node->right != NULL)
+		print_tree(node->right);
+	if (node->type == sep)
+		ptr = ssep;
+	else if (node->type == cmd)
+		ptr = scmd;
+	else if (node->type == e_pipe)
+		ptr = spipe;
+	ft_printf("node type %s  lvl %d ", 
+		ptr, lvl);
+	if (node->data != NULL)
+		ft_printf("data[0] %s\n", node->data->args[0]);
+	else
+		write(1, "\n", 1);
+	lvl--;
+}
+*/
 int	main(int ac, char **av, char **env)
 {
 	char 		*line;
 	t_command	**command_lst;
+	t_tree		**tree_head;
 	int			ret;
 
 	(void)ac;
 	(void)av;
+	tree_head = ft_memalloc(sizeof(t_tree*));
+	if (tree_head == NULL)
+		return (MEMERR);	
 	g_environ = ft_memalloc(sizeof(t_environ*));
 	command_lst = ft_memalloc(sizeof(t_command*));
 	if ((command_lst == NULL) || (g_environ == NULL) || (init_g_env(env) != 0))
@@ -101,18 +134,24 @@ int	main(int ac, char **av, char **env)
 	show_prompt();
 	while (get_next_line(0, &line) > 0)
 	{
-		if ((ret = parser(line, command_lst)) != 0)
+		if ((ret = ft_build_tree(line, tree_head)) != 0)
 			dispatch_parse_err(ret);
-		else if ((ret == MEMERR) 
-				|| (ret = exec_loop(*command_lst) == MEMERR))
-			break;
-		free_cmdlst(*command_lst);
 		free(line);	
-		*command_lst = NULL;
+		ft_printf("Tree buillt! checking syntax ...\n");
+		ret = assert_syntax(*tree_head, 0);
+		if (ret != 0)
+			ft_printf("Syntax error\n");
+	//	print_tree(*tree_head);
+		else
+			eval_tree(*tree_head);
+		free_tree(*tree_head);
+		*tree_head = NULL;
+//		*command_lst = NULL;
 		show_prompt();
 	}
 	free(line);
-	free(command_lst);
+	free(*tree_head);
 	write(1, "\n", 1);
 	return (ret);	
 }
+

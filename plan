@@ -1,0 +1,4 @@
+ft_strtok
+
+loop over input str with strtok
+for each tok 

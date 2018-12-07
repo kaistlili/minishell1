@@ -23,10 +23,11 @@
 # define SYNERR 2
 # define ENVERR 3
 # define ACCERR 4
-
+# define INCOMP 5
 typedef	struct			s_command
 {
 	char 				**args;
+	size_t				agcount;
 	char 				**process_env;
 	struct	s_command	*next;
 	struct	s_command	*previous;
@@ -55,7 +56,8 @@ int			ft_cmptab(char **tab, char *str);
 void		free_tab(char **tab);
 void		free_tab_bytes(char **tab);
 char		**dup_tab(char **tab);
-t_command	*new_cmd_node(char **space_split);
+char		**dup_ntab(char **tab, size_t n);
+t_command	*new_cmd_node(char *cmd_line);
 void		add_cmdlst(t_command **head, t_command *to_add);
 void		free_cmdlst(t_command *command_lst);
 void		putstr_stderr(char *str);

@@ -14,29 +14,37 @@ NAME = minishell
 
 SRC_PATH = src
 
+PARSER_PATH = src/parsing
+
 SRC_NAME =	main.c \
 			util.c \
 			util2.c \
 			testing.c \
 			clean_path.c \
-			parser.c \
 			execute.c \
 			changedir.c \
 			spawn_bin.c \
 			env1.c \
 			env_util.c \
 			ft_env.c \
-			expand_tokens.c
+			expand_tokens.c \
+
+SRC_PARSER = build_tree.c \
+			 tree_tools.c \
+		  	 eval.c \
+			 syntax.c
 
 OBJ_PATH = obj
 
-OBJ_NAME = $(SRC_NAME:.c=.o)
+OBJ_NAME = $(SRC_NAME:.c=.o) $(SRC_PARSER:.c=.o)
 
 LIB = ./lib/libft.a
 
 FLAGS = -ggdb -Wall -Wextra -Werror
 
 SRC = $(addprefix $(SRC_PATH)/,$(SRC_NAME))
+PARSER_SRC = $(addprefix $(PARSER_PATH)/,$(SRC_PARSER))
+
 
 OBJ = $(addprefix $(OBJ_PATH)/,$(OBJ_NAME))
 
@@ -44,11 +52,16 @@ all:	$(NAME)
 
 $(NAME): $(OBJ)
 	$(MAKE) -C ./lib/
-	gcc $(OBJ) $(LIB) -o $@
+	clang $(OBJ) $(LIB) -o $@
 
-$(OBJ_PATH)/%.o: $(SRC_PATH)/%.c
+$(OBJ_PATH)/%.o: $(PARSER_PATH)/%.c 
 	mkdir -p $(OBJ_PATH)
-	gcc -I. $(FLAGS) -o $@ -c $<
+	clang -I. $(FLAGS) -o $@ -c $<
+
+$(OBJ_PATH)/%.o: $(SRC_PATH)/%.c 
+	mkdir -p $(OBJ_PATH)
+	clang $(FLAGS) -o $@ -c $< -I.
+
 
 clean:
 	$(MAKE) -C ./lib/ clean

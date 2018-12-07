@@ -106,7 +106,7 @@ void		add_cmdlst(t_command **head, t_command *to_add)
 	tmp->next = to_add;
 	to_add->previous = tmp;
 }
-
+/*
 t_command	*new_cmd_node(char **space_split)
 {
 	t_command	*new;
@@ -117,6 +117,31 @@ t_command	*new_cmd_node(char **space_split)
 	ft_bzero(new, sizeof(t_command));
 	if (space_split != NULL)
 		new->args = dup_tab(space_split);
+	return (new);
+}
+*/
+
+size_t	tablen(char **split)
+{
+	size_t len;
+
+	len = 0;
+	while (split[len] != NULL)
+		len++;
+	return (len);
+}
+
+t_command	*new_cmd_node(char *cmd_line)
+{
+	t_command	*new;
+	char		**split;
+
+	split = ft_splitblanks(cmd_line);
+	new = ft_memalloc(sizeof(t_command));
+	if ((new == NULL) || (split == NULL))
+		return (NULL);
+	new->args = split;
+	new->agcount = tablen(split);
 	return (new);
 }
 
@@ -134,6 +159,29 @@ char	**dup_tab(char **tab)
 	if (copy == NULL)
 		return (NULL);
 	while (i < len)
+	{
+		copy[i] = ft_strdup(tab[i]);
+		if (copy[i] == NULL)
+		{
+			free_tab(copy);
+			return (NULL);		
+		}
+		i++;
+	}
+	copy[i] = NULL;
+	return (copy);
+}
+
+char	**dup_ntab(char **tab, size_t n)
+{
+	size_t	i;
+	char 	**copy;
+
+	i = 0;
+	copy = malloc((n + 1) * sizeof(char*));
+	if (copy == NULL)
+		return (NULL);
+	while (i < n)
 	{
 		copy[i] = ft_strdup(tab[i]);
 		if (copy[i] == NULL)
